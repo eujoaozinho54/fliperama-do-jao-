@@ -84,7 +84,7 @@
     let pieceY = 0;
 
     let fallInterval = 1000; // Velocidade da queda (em milissegundos)
-    let lastFallTime = 0; // Controle de tempo da última queda
+    let lastFallTime =5; // Controle de tempo da última queda
 
     // Função para desenhar o tabuleiro
     function drawBoard() {
@@ -196,7 +196,7 @@
       if (timestamp - lastFallTime >= fallInterval) {
         drawBoard();
         drawPiece();
-        movePiece(1,5);  // Faz a peça cair
+        movePiece(500);  // Faz a peça cair
         lastFallTime = timestamp;
       }
 
