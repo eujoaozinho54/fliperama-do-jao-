@@ -77,7 +77,12 @@ direction = null;
       snake.unshift(newHead);
     }
 
-    setInterval(draw, 100);
+    let game = setInterval(() => {
+  if (direction) {
+    draw();
+  }
+}, 100);
+
   </script>
 </body>
 </html>
