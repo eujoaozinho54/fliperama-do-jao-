@@ -82,8 +82,9 @@
     let currentPiece = randomPiece();
     let pieceX = Math.floor(columnCount / 2) - Math.floor(currentPiece[0].length / 2);
     let pieceY = 0;
-    let fallInterval =50000; // Velocidade da queda (em milissegundos)
-    let lastFallTime = 1000; // Controle de tempo da última queda
+
+    let fallInterval = 500; // Velocidade da queda (em milissegundos)
+    let lastFallTime = 0; // Controle de tempo da última queda
 
     // Função para desenhar o tabuleiro
     function drawBoard() {
@@ -190,10 +191,14 @@
     }
 
     // Função principal do jogo
-    function gameLoop() {
-      drawBoard();
-      drawPiece();
-      movePiece(0, 1);  // Faz a peça cair
+    function gameLoop(timestamp) {
+      // Controla a velocidade da queda
+      if (timestamp - lastFallTime >= fallInterval) {
+        drawBoard();
+        drawPiece();
+        movePiece(1,5);  // Faz a peça cair
+        lastFallTime = timestamp;
+      }
 
       requestAnimationFrame(gameLoop);
     }
@@ -211,7 +216,8 @@
       }
     });
 
-    gameLoop();
+    gameLoop(0);
   </script>
 </body>
 </html>
+
