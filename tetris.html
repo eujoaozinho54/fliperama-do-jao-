@@ -82,6 +82,8 @@
     let currentPiece = randomPiece();
     let pieceX = Math.floor(columnCount / 2) - Math.floor(currentPiece[0].length / 2);
     let pieceY = 0;
+    let fallInterval = 700; // Velocidade da queda (em milissegundos)
+    let lastFallTime = 0; // Controle de tempo da última queda
 
     // Função para desenhar o tabuleiro
     function drawBoard() {
