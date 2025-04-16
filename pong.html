@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Pong 2 Jogadores com Neon</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #000, #111);
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      color: #0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    canvas {
+      background: #000;
+      border: 4px solid #0f0;
+      box-shadow: 0 0 20px #0f0;
+      margin-top: 20px;
+    }
+
+    #score {
+      font-size: 24px;
+      margin-top: 15px;
+    }
+
+    #menu-button {
+      margin-top: 20px;
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #0f0;
+      transition: 0.3s;
+    }
+
+    #menu-button:hover {
+      background: #fff;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Pong Neon 🎮</h1>
+  <div id="score">Jogador 1: 0 | Jogador 2: 0</div>
+  <canvas id="pong" width="600" height="400"></canvas>
+  <button id="menu-button" onclick="voltarMenu()">Voltar pro Menu</button>
+
+  <!-- Sons -->
+  <audio id="beep" src="https://www.soundjay.com/button/sounds/button-3.mp3"></audio>
+  <audio id="ponto" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
+
+  <!-- Música de fundo estilo arcade -->
+  <audio id="bgmusic" src="https://files.catbox.moe/v1xgrc.mp3" autoplay loop></audio>
+
+  <script>
+    const canvas = document.getElementById("pong");
+    const ctx = canvas.getContext("2d");
+
+    const beep = document.getElementById("beep");
+    const ponto = document.getElementById("ponto");
+    const bgmusic = document.getElementById("bgmusic");
+
+    const scoreDisplay = document.getElementById("score");
+
+    let player1Score = parseInt(localStorage.getItem("p1")) || 0;
+    let player2Score = parseInt(localStorage.getItem("p2")) || 0;
+
+    const paddleWidth = 10, paddleHeight = 100;
+    let p1Y = (canvas.height - paddleHeight) / 2;
+    let p2Y = (canvas.height - paddleHeight) / 2;
+
+    const ball = {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      radius: 8,
+      speed: 4,
+      dx: 4,
+      dy: 4
+    };
+
+    function drawRect(x, y, w, h, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, w, h);
+    }
+
+    function drawCircle(x, y, r, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function drawNet() {
+      for (let i = 0; i < canvas.height; i += 15) {
+        drawRect(canvas.width / 2 - 1, i, 2, 10, "#0f0");
+      }
+    }
+
+    function draw() {
+      drawRect(0, 0, canvas.width, canvas.height, "#000");
+      drawNet();
+      drawRect(0, p1Y, paddleWidth, paddleHeight, "#00ffff");
+      drawRect(canvas.width - paddleWidth, p2Y, paddleWidth, paddleHeight, "#ff0055");
+      drawCircle(ball.x, ball.y, ball.radius, "#fff");
+    }
+
+    function moveBall() {
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+        ball.dy *= -1;
+        beep.play();
+      }
+
+      // Jogador 1 rebate
+      if (ball.x - ball.radius < paddleWidth &&
+          ball.y > p1Y && ball.y < p1Y + paddleHeight) {
+        ball.dx *= -1;
+        beep.play();
+      }
+
+      // Jogador 2 rebate
+      if (ball.x + ball.radius > canvas.width - paddleWidth &&
+          ball.y > p2Y && ball.y < p2Y + paddleHeight) {
+        ball.dx *= -1;
+        beep.play();
+      }
+
+      // Pontuação
+      if (ball.x < 0) {
+        player2Score++;
+        ponto.play();
+        salvarPontuacao();
+        updateScore();
+        resetBall();
+      }
+
+      if (ball.x > canvas.width) {
+        player1Score++;
+        ponto.play();
+        salvarPontuacao();
+        updateScore();
+        resetBall();
+      }
+    }
+
+    function salvarPontuacao() {
+      localStorage.setItem("p1", player1Score);
+      localStorage.setItem("p2", player2Score);
+    }
+
+    function resetBall() {
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+      ball.dx *= -1;
+      ball.dy = 4 * (Math.random() > 0.5 ? 1 : -1);
+    }
+
+    function updateScore() {
+      scoreDisplay.textContent = `Jogador 1: ${player1Score} | Jogador 2: ${player2Score}`;
+    }
+
+    function gameLoop() {
+      draw();
+      moveBall();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Controles
+    document.addEventListener("keydown", function(e) {
+      // Jogador 1: W e S
+      if (e.key === "w" && p1Y > 0) p1Y -= 20;
+      if (e.key === "s" && p1Y + paddleHeight < canvas.height) p1Y += 20;
+
+      // Jogador 2: ↑ ↓
+      if (e.key === "ArrowUp" && p2Y > 0) p2Y -= 20;
+      if (e.key === "ArrowDown" && p2Y + paddleHeight < canvas.height) p2Y += 20;
+    });
+
+    function voltarMenu() {
+      window.location.href = "index.html";
+    }
+
+    updateScore();
+    bgmusic.volume = 0.3; // volume baixo pra não atrapalhar
+    gameLoop();
+  </script>
+</body>
+</html>
