@@ -54,6 +54,7 @@
   <!-- Sons -->
   <audio id="beep" src="https://www.soundjay.com/button/sounds/button-3.mp3"></audio>
   <audio id="ponto" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
+  <audio id="vitoria" src="https://www.soundjay.com/human/sounds/applause-8.mp3"></audio>
 
   <!-- Música de fundo estilo arcade -->
   <audio id="bgmusic" src="https://files.catbox.moe/v1xgrc.mp3" autoplay loop></audio>
@@ -64,6 +65,7 @@
 
     const beep = document.getElementById("beep");
     const ponto = document.getElementById("ponto");
+    const vitoria = document.getElementById("vitoria");
     const bgmusic = document.getElementById("bgmusic");
 
     const scoreDisplay = document.getElementById("score");
@@ -140,6 +142,7 @@
         ponto.play();
         salvarPontuacao();
         updateScore();
+        verificarVitoria();
         resetBall();
       }
 
@@ -148,13 +151,33 @@
         ponto.play();
         salvarPontuacao();
         updateScore();
+        verificarVitoria();
         resetBall();
       }
     }
 
-    function salvarPontuacao() {
-      localStorage.setItem("p1", player1Score);
-      localStorage.setItem("p2", player2Score);
+    function verificarVitoria() {
+      if (player1Score >= 10) {
+        vitoria.play();
+        setTimeout(() => {
+          alert("🏆 Jogador 1 venceu!");
+          player1Score = 0;
+          player2Score = 0;
+          salvarPontuacao();
+          updateScore();
+        }, 300);
+      }
+
+      if (player2Score >= 10) {
+        vitoria.play();
+        setTimeout(() => {
+          alert("🏆 Jogador 2 venceu!");
+          player1Score = 0;
+          player2Score = 0;
+          salvarPontuacao();
+          updateScore();
+        }, 300);
+      }
     }
 
     function resetBall() {
@@ -166,6 +189,11 @@
 
     function updateScore() {
       scoreDisplay.textContent = `Jogador 1: ${player1Score} | Jogador 2: ${player2Score}`;
+    }
+
+    function salvarPontuacao() {
+      localStorage.setItem("p1", player1Score);
+      localStorage.setItem("p2", player2Score);
     }
 
     function gameLoop() {
@@ -190,8 +218,9 @@
     }
 
     updateScore();
-    bgmusic.volume = 0.3; // volume baixo pra não atrapalhar
+    bgmusic.volume = 0.3;
     gameLoop();
   </script>
 </body>
 </html>
+
