@@ -57,10 +57,10 @@
         headX < 0 || headY < 0 || headX >= 400 || headY >= 400 ||
         snake.some(seg => seg.x === headX && seg.y === headY)
       ) {
-        alert("Game Over!");
-        snake = [{ x: 9 * box, y: 10 * box }];
-        direction = null;
-        return;
+        console.log("Game Over!");
+snake = [{ x: 9 * box, y: 10 * box }];
+direction = null;
+
       }
 
       let newHead = { x: headX, y: headY };
